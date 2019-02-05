@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <form enctype="multipart/form-data" method='post' action=''>
+        {% csrf_token %}
+            <table class="table mb-0">
+            <thead>
+            <th>Order id</th>
+            <th>Status</th>
+            </thead>
+            <tdoby>
+                {% for each in items %}
+                    <tr>
+                        <td class="align-middle">{{ each.product.product_description }}</td>
+                        <td class="align-middle">{{ each.quantity }}</td>
+                {% endfor %}
+            </tdoby>
+        </table>
+    </form>
+</div>
+{% endblock %}

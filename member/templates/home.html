@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <div>
+        <div>
+            <h5>welcome {{ username }}...</h5>
+            <a href="{% url 'product:view_all_products' %}" class="btn btn-primary" role="button">new order</a>
+            <a href="{% url 'order:all_orders_history' %}" class="btn btn-primary" role="button">My Orders</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

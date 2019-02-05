@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script type='text/javascript'>
+$(document).ready(function(){
+    function decreamentQuantity(product_id){
+    $.ajax({
+        url: '/cart/add_to_cart/',
+        type: 'post',
+        data: {'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val(), 'product_id': $(product_id).val()},
+        dataType: 'json',
+        success: function(json_data){
+
+        }
+    });
+
+    function increamentQuantity(product_id){
+    $.ajax({
+        url: '/cart/remove_from_cart/',
+        type: 'post',
+        data: {'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val(), 'product_id': $(product_id).val()},
+        dataType: 'json',
+        success: function(json_data){
+
+        }
+    });
+
+}
+
+}
+    </script>
+
+<div>
+    <form enctype="multipart/form-data" method='post' action=''>
+         {% csrf_token %}
+        <table class="table table-hover">
+            <tbody>
+                {% for product in products %}
+                    <tr><td>{{ product.product_description|lower }} </td>
+                        <td class="align-middle"><a href="{% url 'cart:add_to_cart' product_id=product.id %}" >Add</a> /
+                        <a href="{% url 'cart:remove_from_cart' product_id=product.id%}">Delete</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </form>
+</div>
+{% if products %}
+<div class="pagination">
+    <span class="step-links">
+        {% if products.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ products.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ products.number }} of {{ products.paginator.num_pages }}.
+        </span>
+
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}">next</a>
+            <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% else %}
+   <script>
+    alert('{{ message }}');
+</script>
+    <div  class="alert alert-primary" role="alert">
+        <p> {{ message }}</p>
+        </div>
+{% endif %}
+{% endblock %}

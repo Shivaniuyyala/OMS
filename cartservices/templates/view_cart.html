@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if not is_empty %}
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+        </tr>
+        {% for item in cart %}
+        <tr>
+            <td>{{ item.product.product_description }}</td>
+            <td>{{ item.quantity }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div><a href="{% url 'order:create_order' %}" class="btn btn-primary">Place Order</a>
+</div>
+    {% else %}
+            <script>
+                    alert('Cart is empty !!!');
+            </script>
+            <div  class="alert alert-primary" role="alert">
+                    <p> Cart is empty !!!</p>
+            </div>
+    {% endif %}
+{% endblock %}
