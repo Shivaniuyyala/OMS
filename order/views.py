@@ -19,7 +19,7 @@ class ViewAllOrders(ListView):
 
     def get(self, request, *args, **kwargs):
         Orders_list = Order.objects.filter(user=request.user)
-        paginator = Paginator(Orders_list, 2)  # Show 10 contacts per page
+        paginator = Paginator(Orders_list, 2)
 
         page = request.GET.get('page')
         orders = []
@@ -39,17 +39,18 @@ class ViewAllOrders(ListView):
 
 @login_required
 def create_order(request):
-    from cartservices.cart import Cart
-    cart = Cart(request)
-    items = cart.cart.item_set.all()
+    from cartservices.cart import CartServices
+    from product.models import Product
+    cart = CartServices(request)
+    items_dict = dict(cart.cart.item_set.all().values_list('product', 'quantity'))
     try:
         with transaction.atomic():
             order = Order.objects.create(user=request.user)
-            for each in items:
-                product = each.get_product()
-                if product.stock >= each.quantity:
-                    order.items.add(OrderItem.objects.create(product=each.get_product(), quantity=each.quantity))
-                    product.stock = product.stock - each.quantity
+            products = Product.objects.select_for_update().filter(id__in=items_dict.keys())
+            for product in products:
+                if product.stock >= items_dict[product.id]:
+                    order.items.add(OrderItem.objects.create(product=product, quantity=items_dict[product.id]))
+                    product.stock = product.stock - int(items_dict[product.id])
                     product.save()
         messages.success(request, "Order placed successfully")
     except:
@@ -69,14 +70,16 @@ def viewOrderDetails(request, order_id):
 
 @login_required
 def cancel_order(request, order_id):
+    from product.models import Product
     order = Order.objects.get(order_id=order_id)
-    items = order.items.all()
+    items_dict = dict(order.items.all().values_list('product', 'quantity'))
     try:
         with transaction.atomic():
             if not order.status == Order.CANCELLED:
-                for each_item in items:
-                    each_item.product.stock = each_item.product.stock+each_item.quantity
-                    each_item.product.save()
+                products = Product.objects.select_for_update().filter(id__in=items_dict.keys())
+                for product in products:
+                    product.stock = product.stock+items_dict[product.id]
+                    product.save()
                 order.status = Order.CANCELLED
                 order.save()
         messages.success(request, "Order cancelled Successfully")

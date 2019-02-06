@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.shortcuts import render, render_to_response, redirect
 from django.contrib import messages
-from cartservices.cart import Cart
+from cartservices.cart import CartServices
 from product.models import Product
 from member.decorators import login_required
 
@@ -10,7 +10,7 @@ from member.decorators import login_required
 @login_required
 def add_to_cart(request, product_id, quantity=1):
     product = Product.objects.get(id=product_id)
-    cart = Cart(request)
+    cart = CartServices(request)
     try:
         cart.add(product, quantity)
     except:
@@ -20,7 +20,7 @@ def add_to_cart(request, product_id, quantity=1):
 @login_required
 def remove_from_cart(request, product_id):
     product = Product.objects.get(id=product_id)
-    cart = Cart(request)
+    cart = CartServices(request)
     try:
         cart.remove(product)
     except:
@@ -30,7 +30,7 @@ def remove_from_cart(request, product_id):
 
 @login_required
 def get_cart(request):
-    cart = Cart(request)
+    cart = CartServices(request)
     is_empty = False
     if not cart.count():
         is_empty = True
