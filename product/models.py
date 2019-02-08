@@ -8,7 +8,6 @@ from order.models import BaseClass
 
 
 class ProductBrand(BaseClass):
-    internal_name = models.CharField(max_length=255, blank=True)
     name = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(_("Slug Name"), db_index=True, blank=True, null=True, unique=True)
 

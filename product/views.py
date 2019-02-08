@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic.list import ListView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from member.decorators import login_required
+from django.utils.decorators import method_decorator
 from product.models import *
 
 
@@ -19,7 +20,7 @@ class ViewAllProducts(ListView):
     def get(self, request, *args, **kwargs):
         products_list = Product.objects.all()
         total_products = products_list.count()
-        paginator = Paginator(products_list, 2)  # Show 10 contacts per page
+        paginator = Paginator(products_list, 2)
 
         page = request.GET.get('page')
         products = []
@@ -36,7 +37,5 @@ class ViewAllProducts(ListView):
                                                     'message': "products not found" if not
         products else ""})
 
-    def post(self, request, *args, **kwargs):
-        return HttpResponseRedirect('/')
 
 

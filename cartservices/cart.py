@@ -21,7 +21,10 @@ class CartServices:
             except Cart.DoesNotExist:
                 cart = self.new(request)
         else:
-            cart = self.new(request)
+            try:
+                cart = Cart.objects.get(user=request.user, checked_out=False)
+            except Cart.DoesNotExist:
+                cart = self.new(request)
         self.cart = cart
 
     def __iter__(self):
@@ -29,7 +32,7 @@ class CartServices:
             yield item
 
     def new(self, request):
-        cart = Cart(creation_date=datetime.datetime.now())
+        cart = Cart(creation_date=datetime.datetime.now(), user=request.user)
         cart.save()
         request.session[CART_ID] = cart.id
         return cart

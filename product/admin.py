@@ -17,7 +17,7 @@ class ProductDescriptionAdmin(admin.ModelAdmin):
 
 class ProductBrandAdmin(admin.ModelAdmin):
     model = ProductBrand
-    list_display = ('internal_name', 'name', 'slug', 'updated_on', 'created_on',)
+    list_display = ('name', 'slug', 'updated_on', 'created_on',)
 
 
 admin.site.register(Product, ProductAdmin)
